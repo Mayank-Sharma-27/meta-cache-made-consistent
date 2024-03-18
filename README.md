@@ -89,7 +89,7 @@ meta_data_table = {"1": 42}
 version_table = {"1": 4}
 ```
 
-![time_graph.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/Meta_bug.jpg)
+![time_graph.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/time_graph.jpg)
 
 1. When the read request comes the value is first checked in the cache, if the value is not present in the cache then the value is returned from the database
 
