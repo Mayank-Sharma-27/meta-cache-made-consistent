@@ -22,7 +22,7 @@ First let us look how can cache inconsistency be introduced:
 
 []()
 
-![Cache-made-consisent-image-1 (1).webp](https://prod-files-secure.s3.us-west-2.amazonaws.com/e37dd734-6ef8-4139-8588-545bd44dbdac/bcc10e54-a10e-4ee4-bbcb-76f9c2134c90/Cache-made-consisent-image-1_(1).webp)
+![Cache-made-consisent-image-1 (1).webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/Cache-made-consisent-image-1%20(1).jpg)
 
 Please assume that 1,2,3,4 are timestamps in increasing sequence
 
@@ -44,7 +44,7 @@ When you send a user a DM on Instagram, behind the scenes, there is a mapping fo
 
 Imagine three users here. Bob, Mary, and Alice both send Alice a message. Bob is in the USA Alice is in Europe, and Mary is in Japan. So the system will query in the nearest region close to where the user lives, so send the message to Alex’s data store. In this case, when the TAO replica queried the region where BOB and Mary live, they both had inconsistent data, and it sent the message to the region in which none of it had Alice’s messages.
 
-![Cache-made-consisent-image-2.webp](https://prod-files-secure.s3.us-west-2.amazonaws.com/e37dd734-6ef8-4139-8588-545bd44dbdac/8acc8be1-1d97-4376-bc5d-b0644de6885e/Cache-made-consisent-image-2.webp)
+![Cache-made-consisent-image-2.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/Cache-made-consisent-image-2.jpg)
 
 In the above case there would be message loss and bad user experience so it was one of the top problems for meta to solve.
 
@@ -58,7 +58,7 @@ Before we dive deep into the actual solution that Meta implemented, the easiest 
 
 Polaris at a very high level, interacts with a stateful service as a client and assumes no knowledge of service internals. Polaris works on the principle that “Cache should eventually be consistent with the database." Polaris receives an invalidation event and queries all the replicas to verify if any other violations occurs. For example: if Polaris receives an invalidation event that says x=4 version 4, it then checks all the cache replicas as a client to verify whether any violations of any invariant occur. If one replica returns x=3 @ version 3, Polaris flags it as inconsistent and requeues the sample to later check it against the same target cache host. **Polaris reports inconsistencies at certain timescales, e.g., one minute, five minutes, or 10 minutes.**
 
-![polaris.webp](https://prod-files-secure.s3.us-west-2.amazonaws.com/e37dd734-6ef8-4139-8588-545bd44dbdac/ed0bad92-8937-4d41-8aa6-089bed123a57/polaris.webp)
+![polaris.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/polaris.jpg)
 
 This multi-timescale design not only allows Polaris to have multiple queues internally to implement backoff and retries efficiently, but also essential for preventing it from producing false positives.
 
@@ -89,7 +89,7 @@ meta_data_table = {"1": 42}
 version_table = {"1": 4}
 ```
 
-![time_graph.webp](https://prod-files-secure.s3.us-west-2.amazonaws.com/e37dd734-6ef8-4139-8588-545bd44dbdac/f2fe7e79-0af8-4a63-9188-4b9ea5f02622/time_graph.webp)
+![time_graph.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/Meta_bug.jpg)
 
 1. When the read request comes the value is first checked in the cache, if the value is not present in the cache then the value is returned from the database
 
@@ -168,7 +168,7 @@ Please keep in mind this is the very simplified variation of how the bug may hav
 
 Now that you are on call and have been paged for the cache inconsistencies from Polaris, it is most important to check the logs and where the issue could be. As we discussed previously, logging each and every cache data change is almost impossible, but what if we only log the changes that have the potential to cause the change?
 
-![Meta_bug.webp](https://prod-files-secure.s3.us-west-2.amazonaws.com/e37dd734-6ef8-4139-8588-545bd44dbdac/cf6ac476-08fd-4979-b517-bbd7da6e222d/Meta_bug.webp)
+![Meta_bug.webp](https://github.com/Mayank-Sharma-27/meta-cache-made-consistent/blob/main/Meta_bug.jpg)
 
 If we see the above code that we implemented the issue can arise in case if the cache did not receive the invalidation event or the invalidation did not work. From the oncall’s perspective we need to check the following:
 
