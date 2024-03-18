@@ -69,7 +69,7 @@ def write_value(key, value):
 
     write_in_databse_transactionally(key, value, version)
     time.sleep(3) ## To reproduce the error
-    invalidate_cache("3", value, version)
+    invalidate_cache(key, value, version)
 
 def print_values():
     time.sleep(5)
